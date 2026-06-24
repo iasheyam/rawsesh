@@ -19,7 +19,24 @@ const VALID_HOURS_PER_WEEK = ["1–2 hrs", "3–5 hrs", "5–10 hrs", "10+ hrs"]
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let body: Record<string, any>;
+  try {
+    body = await req.json();
+  } catch {
+    return error("Invalid request body.", 400);
+  }
+
+  try {
+    return await handlePost(body);
+  } catch (e) {
+    console.error("Unhandled error in /api/apply:", e);
+    return error("Something went wrong. Please try again.", 500);
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handlePost(body: Record<string, any>) {
 
   const {
     full_name,
